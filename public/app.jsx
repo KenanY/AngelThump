@@ -1,5 +1,12 @@
+'use strict';
+
+const feathers = require('feathers-client');
+const React = require('react');
+const ReactDOM = require('react-dom');
+
 // Establish a Socket.io connection
 const socket = io();
+
 // Initialize our Feathers client application through Socket.io
 // with hooks and authentication.
 const app = feathers()
@@ -24,7 +31,7 @@ const Profile = React.createClass({
     });
   },
 
-  toggleStreamKey(){
+  toggleStreamKey() {
     this.setState({showStreamKey: !this.state.showStreamKey})
   },
 
@@ -34,8 +41,6 @@ const Profile = React.createClass({
 
   render() {
     const user = this.props.user;
-
-    // <a className="button" href="#" onClick={this.resetStreamKey}>Reset Stream Key</a>
 
     return <main className="container">
       <div className="row">
@@ -133,14 +138,6 @@ const ProfileApp = React.createClass({
     return {
       user: {}
     };
-  },
-
-  componentDidUpdate: function() {
-    // Whenever something happened, scroll to the bottom of the chat window
-    const node = this.getDOMNode().querySelector('.chat');
-    node.scrollTop = node.scrollHeight - node.clientHeight;
-
-
   },
 
   componentDidMount() {

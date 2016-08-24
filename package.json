@@ -17,6 +17,7 @@
     "node": ">= 0.12.0"
   },
   "scripts": {
+    "build": "buble < public/app.jsx | browserify -g uglifyify - | uglifyjs -cm > public/bundle.js",
     "test": "npm run jshint && npm run mocha",
     "jshint": "jshint src/. test/. --config",
     "start": "node src/",
@@ -27,9 +28,10 @@
     "compression": "^1.6.2",
     "cors": "^2.7.1",
     "ejs": "^2.4.2",
-    "feathers": "^2.0.1",
+    "feathers": "^2.0.3",
     "feathers-authentication": "^0.7.9",
-    "feathers-configuration": "^0.4.1",
+    "feathers-client": "^1.5.2",
+    "feathers-configuration": "^0.3.1",
     "feathers-errors": "^2.4.0",
     "feathers-hooks": "^1.5.4",
     "feathers-mongoose": "^3.6.1",
@@ -37,6 +39,8 @@
     "feathers-socketio": "^1.4.1",
     "mongoose": "^4.5.8",
     "passport": "^0.3.2",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
     "request": "^2.72.0",
     "request-promise": "^4.1.1",
     "serve-favicon": "^2.3.0",
@@ -44,8 +48,12 @@
     "winston": "^2.2.0"
   },
   "devDependencies": {
+    "browserify": "^13.1.0",
+    "buble": "^0.15.2",
     "jshint": "^2.9.2",
     "mocha": "^3.0.1",
-    "request": "^2.74.0"
+    "request": "^2.74.0",
+    "uglify-js": "^2.7.3",
+    "uglifyify": "^3.0.2"
   }
 }
