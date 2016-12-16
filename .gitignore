@@ -5,6 +5,9 @@ logs
 #conf
 *.conf
 
+#mongo
+src/services/user/index.js
+
 # Runtime data
 pids
 *.pid
