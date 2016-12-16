@@ -14,10 +14,10 @@ Made by Overpowered & hephaestus
 Thanks to all the Contributors:
 SgtMaximum
 
-## Donations
+## Patreon/Donations
 I do not make any profit off of this. All donations will go to server costs and it will be appericated.
 
-[Donate Here](http://www.AngelThump.com/donate)
+[Become a Patreon](https://www.Patreon.com/angelthump)
 
 ## Getting Started
 
