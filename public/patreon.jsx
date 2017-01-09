@@ -11,22 +11,6 @@ const app = feathers()
   }));
 
 const Profile = React.createClass({
-  getInitialState() {
-    return {
-      showStreamKey: false
-    };
-  },
-
-  resetStreamKey() {
-    const userService = app.service('users');
-    userService.patch(this.props.user._id, {
-      streamkey: 0
-    });
-  },
-
-  toggleStreamKey(){
-    this.setState({showStreamKey: !this.state.showStreamKey})
-  },
 
   logout() {
     app.logout().then(() => window.location.href = '/index.html');
@@ -35,80 +19,19 @@ const Profile = React.createClass({
   render() {
     const user = this.props.user;
 
-    // <a className="button" href="#" onClick={this.resetStreamKey}>Reset Stream Key</a>
-
     return <main className="container">
       <div className="row">
         <div className="col-lg-8 col-lg-offset-4">
           <div className="nav">
-            <h3 className="title">Profile</h3>
+            <h3 className="title">Patreon Info</h3>
           </div>
           <div className="row">
             <div className="col-md-12">
               <div>
-                <strong>Email</strong>
+                <strong>Username</strong>
               </div>
               <div>
-                {user.email}
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-12">
-            <a href={'https://www.AngelThump.com/embed/' + user.username}>
-              <div>
-                <strong>Embed link: https://www.AngelThump.com/embed/{user.username}</strong>
-              </div>
-              </a>
-              <div>
-                <strong>Channel Name: {user.username}</strong>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-12">
-              <div>
-                <strong>US Ingest URL</strong>
-              </div>
-              <div>
-                rtmp://ingest.angelthump.com:1935/live
-              </div>
-              <div>
-                <strong>EU Ingest URL</strong>
-              </div>
-              <div>
-                rtmp://eu-ingest.angelthump.com:1935/live
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-md-12">
-              <div>
-                <strong>OBS SETTINGS (VERY IMPORTANT)</strong>
-              </div>
-              <div>
-                <em>Keyframe Interval: 2</em>
-              </div>
-              <div>
-                <em>x264 option: scenecut=-1</em>
-              </div>
-              <div>
-                <p>
-                  <a className="btn btn-primary" href="#" onClick={this.toggleStreamKey}>
-                    {this.state.showStreamKey ? "Hide Stream Key" : "Show Stream Key"}
-                  </a>
-                  {
-                    this.state.showStreamKey
-                      ? <button type='button' className='btn btn-warning reset'
-                         href='#' onClick={this.resetStreamKey}>
-                          Reset Stream Key
-                        </button>
-                      : ''
-                  }
-                </p>
-                <p>
-                  {this.state.showStreamKey ? user.streamkey : "Stream Key Hidden"}
-                </p>
+                patreon
               </div>
             </div>
           </div>
@@ -145,7 +68,6 @@ const ProfileApp = React.createClass({
 
   componentDidMount() {
     const userService = app.service('users');
-    // const messageService = app.service('messages');
     const cached_user = app.get('user');
     console.log(cached_user._id);
 

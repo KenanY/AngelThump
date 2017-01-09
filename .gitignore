@@ -8,6 +8,9 @@ logs
 #mongo
 src/services/user/index.js
 
+#auth
+src/services/authentication/index.js
+
 # Runtime data
 pids
 *.pid

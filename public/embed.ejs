@@ -4,6 +4,7 @@
 <head>
     <link href="/css/video-js.css" rel="stylesheet">
     <link href="/css/videojs.logobrand.css" rel="stylesheet">
+    <link href="/css/videojs-resolution-switcher.css" rel="stylesheet">
     <link rel="shortcut icon" href="/favicon.png">
 
   <title>
@@ -45,40 +46,58 @@
   <video id=yee class="video-js vjs-default-skin" autoplay controls preload="auto">
 </video>
   <script src="/js/video.js"></script>
+  <script src="/js/videojs-resolution-switcher.js"></script>
   <script src="/js/videojs5-hlsjs-source-handler.js"></script>
   <script src="/js/videojs.logobrand.js"></script>
   <script src="/js/videojs-persistvolume.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/core-js/2.1.4/core.min.js"></script>
+  <script type="text/javascript" src="//unpkg.com/feathers-client@^1.0.0/dist/feathers.js"></script>
   <script>
+    var user, ifPatreon = false;
     var channel = "<%= username %>";
 
   var sources =
     [
-      {type:"application/x-mpegURL", src: "https://cdn.angelthump.com/hls/" + channel + ".m3u8"}
+      {type:"application/x-mpegURL", src: "https://nyc-load.angelthump.com/hls/" + channel + ".m3u8", label: 'US-E'},
+      {type:"application/x-mpegURL", src: "https://ams-load.angelthump.com/hls/" + channel + ".m3u8", label: 'EU'},
+      {type:"application/x-mpegURL", src: "https://nyc-patreon.angelthump.com/hls/" + channel + ".m3u8", label: 'PATREONS'},
+      {type:"application/x-mpegURL", src: "https://cdn.angelthump.com/hls/" + channel + ".m3u8", label: 'auto'},
     ];
-
 
     var options = {
         html5: {
             hlsjsConfig: {
                 debug: false
             }
+        },
+        plugins: {
+        videoJsResolutionSwitcher: {
+          default: 'auto',
+          dynamicLabel: true
         }
+      }        
     };
 
     var player = videojs('yee', options);
-    player.src(sources);
-    player.qualityPickerPlugin();
+    player.updateSrc(sources);
 
     player.on("pause", function () {
       player.one("play", function () {
-        player.src(sources);
+        player.updateSrc(sources);
       });
     });
+
+    player.on("resolutionchange", function() {
+      if(player.currentResolution().label == "PATREONS") {
+        checkPatreon();
+      }
+    })
 
 
   player.poster('https://angelthump.com/default_offline.jpg');
 
-  	/*
+    /*
     player.logobrand({
          image: "https://angelthump.com/picdonate.png",
          destination: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VKPL7E8RSL38"});*/
@@ -87,7 +106,7 @@
          image: "https://angelthump.com/patreon.png",
          destination: "https://patreon.com/angelthump"});
 
-	/*
+  /*
     var requestTime = 1000;
     function retry() {
     setTimeout(function() {
@@ -98,7 +117,7 @@
         }
         
         if(running && player.readyState() == 0) {
-        	retry();
+          retry();
         }
 
     }, requestTime);
@@ -110,18 +129,57 @@
     player.on('error', function(e) {
     if (player.error().code == 2) {
         player.error(null);
-
-        if(!running) {
-          //retry();
-          running = true;
-        }
       }
     })
 
     player.persistvolume({
        namespace: "YEE boi"
     });
+
+
+    function checkPatreon() {
+      var jwtToken = localStorage.getItem("feathers-jwt");
+      if(jwtToken == null) {
+        alert("Login to access this patreon server! Refresh after you login!");
+        window.location = "https://angelthump.com/login.html";
+      }
+      var host = 'https://angelthump.com';
+      var socket = io(host);
+
+      // Set up Feathers client side
+      var app = feathers()
+        .configure(feathers.socketio(socket))
+        .configure(feathers.hooks())
+        .configure(feathers.authentication({ storage: window.localStorage }));
+
+      // Authenticating using a token instead
+      app.authenticate({
+        type: 'token',
+        'token': jwtToken
+      }).then(user => {
+        app.set('user', user);
+        user = app.get('user');
+        ifPatreon = user.data.patreon;
+        if(!ifPatreon) {
+          player.currentResolution("auto");
+          alert("You are not a patreon. If you are, please PM Overpowered on the destiny.gg chat or pm me on Patreon");
+        }
+      }).then(function(result){
+        console.log('Authenticated!', app.get('token'));
+      }).catch(function(error){
+        alert("Login to access this patreon server! Refresh after you login!");
+        window.location = "https://angelthump.com/login.html";
+        console.error('Error authenticating!', error);
+      });
+
+      // If the transport changes, you have to call authenticate() again.
+      socket.io.engine.on('upgrade', function(transport) {
+        console.log('transport changed');
+        app.authenticate();
+      });
+    }
   </script>
+
 
 
 </body>

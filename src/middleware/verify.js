@@ -33,7 +33,7 @@ module.exports.initial = function(app) {
         const username = users[0].username;
         res.redirect(username);
       }else{
-        res.status(503).send('You are banned');
+        res.status(403).send('You are banned');
       }
     })
     // On errors, just call our error middleware

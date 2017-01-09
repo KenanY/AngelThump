@@ -2,8 +2,7 @@
 <html>
 
 <head>
-    <link href="//vjs.zencdn.net/5.10.7/video-js.css" rel="stylesheet">
-    <link href="/css/videojs-resolution-switcher.css" rel="stylesheet">
+    <link href="/css/video-js.css" rel="stylesheet">
     <link href="/css/videojs.logobrand.css" rel="stylesheet">
     <link rel="shortcut icon" href="/favicon.png">
 
@@ -34,6 +33,9 @@
     cursor: none;
   }
 
+  .video-js.vjs-default-skin .vjs-big-play-button { display: none; }
+
+
   </style>
 
 </head>
@@ -42,9 +44,8 @@
 
   <video id=yee class="video-js vjs-default-skin" autoplay controls preload="auto">
 </video>
-  <script src="//vjs.zencdn.net/5.10.7/video.js"></script>
-  <script src="/js/videojs-contrib-hls-test.js"></script>
-  <script src="/js/videojs-resolution-switcher.js"></script>
+  <script src="/js/video.js"></script>
+  <script src="/js/videojs5-hlsjs-source-handler.js"></script>
   <script src="/js/videojs.logobrand.js"></script>
   <script src="/js/videojs-persistvolume.js"></script>
   <script>
@@ -52,75 +53,68 @@
 
   var sources =
     [
-      {type:"application/x-mpegURL", src: "http://cdn.angelthump.com/hls/" + channel + "/index.m3u8", label: "SOON ™ ", res: 1}
+      {type:"application/x-mpegURL", src: "https://cdn.angelthump.com/hls/" + channel + ".m3u8"}
     ];
 
 
-    // local storage makes everything a string,
-    // "10" explicity sets base-10 because memes
-    var userDefaultRes = parseInt(localStorage.getItem('userDefaultRes') || "5", 10);
-
-    var player = videojs('yee', {
-    plugins: {
-        videoJsResolutionSwitcher: {
-          default: userDefaultRes,
-          dynamicLabel: true
+    var options = {
+        html5: {
+            hlsjsConfig: {
+                debug: false
+            }
         }
-      }
-    }, function(){
-	player.updateSrc(sources);
-    })
+    };
 
-
-    player.on('resolutionchange', function(){
-      // save current resolution to localstorage
-      localStorage.setItem('userDefaultRes', player.currentResolution().sources[0].res)
-    })
+    var player = videojs('yee', options);
+    player.src(sources);
+    player.qualityPickerPlugin();
 
     player.on("pause", function () {
-      player.reset();
       player.one("play", function () {
-        player.currentResolution(player.currentResolution().label);
+        player.src(sources);
       });
     });
 
-	player.poster('http://angelthump.com/default_offline.jpg');
+
+  player.poster('https://angelthump.com/default_offline.jpg');
+
+    /*
+    player.logobrand({
+         image: "https://angelthump.com/picdonate.png",
+         destination: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VKPL7E8RSL38"});*/
 
     player.logobrand({
-         image: "//angelthump.com/picdonate.png",
-         destination: "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3VKPL7E8RSL38"});
+         image: "https://angelthump.com/patreon.png",
+         destination: "https://patreon.com/angelthump"});
 
+  /*
     var requestTime = 1000;
     function retry() {
     setTimeout(function() {
-        player.currentResolution(player.currentResolution().label);
+        player.src(sources);
 
         if(requestTime < 16000) {
         requestTime = requestTime * 2;
         }
-        running = false;
+        
+        if(running && player.readyState() == 0) {
+          retry();
+        }
 
     }, requestTime);
     }
 
-    var running = false;
+    var running = false;*/
 
 
     player.on('error', function(e) {
-      if(player.error().code == 4 ) {
+    if (player.error().code == 2) {
         player.error(null);
-        //player.hasStarted(false);
+
         if(!running) {
-		retry();
-		running = true;
-		    }
-      } else if (player.error().code == 2) {
-        player.error(null);
-        //player.hasStarted(false);
-        if(!running) {
-		//retry();
-		running = true;
-		    }
+          //retry();
+          running = true;
+        }
       }
     })
 
